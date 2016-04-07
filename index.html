@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hizzin's Web Chat</title>
+  <link rel="stylesheet" type="text/css" href="/css/base.css">
+</head>
+<body>
+  <main>
+    <section class="wrap-chat-room">
+      <ul id="messages" class="wrap-messages">
+        <li class="self"><span>안녕하세요</span></li>
+        <li class="user1"><span>안녕하세요</span></li>
+        <li class="user2"><span>반가워요</span></li>
+      </ul>
+      <form action="">
+        <input id="m" autocomplete="off" /><button>Send</button>
+      </form>
+    </section>
+  </main>
+<script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+  <script>
+    var socket = io();
+    $('form').submit(function() {
+      socket.emit('chat message', $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+    socket.on('chat message', function(msg) {
+      $('#messages').append($('<li>').text(msg));
+    });
+  </script>
+</body>
+</html>
