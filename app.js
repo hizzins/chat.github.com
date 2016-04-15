@@ -11,8 +11,15 @@ io.on('connection', function(socket) {
 	console.log('a user connected');
 	socket.on('chat message', function(msg) {
 		console.log('message:' + msg);
-		io.emit('chat message', msg);
+		socket.broadcast.emit('chat message', msg);
+    socket.broadcast.emit('typing');
 	});
+
+  socket.on('typing', function() {
+		console.log('typing');
+    socket.broadcast.emit('typing');
+	});
+
 	socket.on('disconnect', function() {
 		console.log('disconnected');
 	});

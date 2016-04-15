@@ -15,7 +15,7 @@ body
   background: #424242
 
 form
-  background: #000
+  background: #969696
   padding: 3px
   position: fixed
   bottom: 0
@@ -27,9 +27,14 @@ form input
   margin-right: .5%
 form button
   width: 9%
-  background: rgb(130, 224, 255)
+  padding: 5px 10px
+  background: #FF5722
   border: none
-  padding: 10px
+  color: white
+  font-size: 16px
+  line-height: 23px
+
+
 #messages
   list-style-type: none
   margin: 0
@@ -41,11 +46,31 @@ form button
     font-size: 18px
   li.self
     text-align: right
-  li span
+    .text
+      margin-right: 30px
+      background: #40C4FF
+
+    .tail
+      left: initial
+      right: -28px
+      border-color: transparent transparent transparent #40C4FF
+
+  .text
+    position: relative
     display: inline-block
+    max-width: 70%
     padding: 10px 15px
+    margin-left: 30px
     border-radius: 20px
     background: #F4B400
     color: white
-  li.self span
-    background: #40C4FF
+  .tail
+    position: absolute
+    left: -28px
+    top: 4px
+    display: inline-block
+    width: 0
+    height: 0
+    border-style: solid
+    border-width: 20px
+    border-color: transparent #F4B400 transparent transparent

@@ -17,7 +17,7 @@ body {
   background: #424242; }
 
 form {
-  background: #000;
+  background: #969696;
   padding: 3px;
   position: fixed;
   bottom: 0;
@@ -31,9 +31,12 @@ form input {
 
 form button {
   width: 9%;
-  background: #82e0ff;
+  padding: 5px 10px;
+  background: #FF5722;
   border: none;
-  padding: 10px; }
+  color: white;
+  font-size: 16px;
+  line-height: 23px; }
 
 #messages {
   list-style-type: none;
@@ -46,13 +49,31 @@ form button {
     font-size: 18px; }
   #messages li.self {
     text-align: right; }
-  #messages li span {
+    #messages li.self .text {
+      margin-right: 30px;
+      background: #40C4FF; }
+    #messages li.self .tail {
+      left: initial;
+      right: -28px;
+      border-color: transparent transparent transparent #40C4FF; }
+  #messages .text {
+    position: relative;
     display: inline-block;
+    max-width: 70%;
     padding: 10px 15px;
+    margin-left: 30px;
     border-radius: 20px;
     background: #F4B400;
     color: white; }
-  #messages li.self span {
-    background: #40C4FF; }
+  #messages .tail {
+    position: absolute;
+    left: -28px;
+    top: 4px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 20px;
+    border-color: transparent #F4B400 transparent transparent; }
 
 /*# sourceMappingURL=base.css.map */

@@ -9,9 +9,9 @@
   <main>
     <section class="wrap-chat-room">
       <ul id="messages" class="wrap-messages">
-        <li class="self"><span>안녕하세요</span></li>
-        <li class="user1"><span>안녕하세요</span></li>
-        <li class="user2"><span>반가워요</span></li>
+        <li class="self"><span class="text"><span class="tail"></span>안녕하세요</span></li>
+        <li class="user1"><span class="text"><span class="tail"></span>안녕하세요</span></li>
+        <li class="user2"><span class="text"><span class="tail"></span>반가워요</span></li>
       </ul>
       <form action="">
         <input id="m" autocomplete="off" /><button>Send</button>
@@ -23,14 +23,27 @@
 
   <script>
     var socket = io();
+    var nickName = '';
+
     $('form').submit(function() {
-      socket.emit('chat message', $('#m').val());
+      socket.emit('chat message', $('#m').val()); // 뒤에 인자 {}로 넣어주기
       $('#m').val('');
       return false;
     });
+
     socket.on('chat message', function(msg) {
-      $('#messages').append($('<li>').text(msg));
+      var textSet = '<li><span class="text"><span class="tail"></span>' + msg + '</span></li>';
+      $('#messages').append(textSet);
     });
+
+    $('#m').keydown(function() {
+      socket.emit('typing');
+    });
+
+    socket.on('typing', function() {
+      console.log('typing');
+    });
+
   </script>
 </body>
 </html>
