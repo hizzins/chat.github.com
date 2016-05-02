@@ -7,14 +7,24 @@
 </head>
 <body>
   <main>
+    <section class="wrap-join">
+      <form class="room-create-form" action="">
+        <label>nickName: </label><input id="nickName" type="text">
+        <label>joinRoom: </label><input id="roomName" type="text">
+        <button id="joinRoom" class="btn-primary" type="button">join</button>
+        <button id="createRoom" class="btn-primary" type="button">방생성</button><br><br>
+      </form>
+    </section>
     <section class="wrap-chat-room">
       <ul id="messages" class="wrap-messages">
-        <li class="self"><span class="text"><span class="tail"></span>안녕하세요</span></li>
+        <!-- <li class="self"><span class="text"><span class="tail"></span>안녕하세요</span></li>
         <li class="user1"><span class="text"><span class="tail"></span>안녕하세요</span></li>
-        <li class="user2"><span class="text"><span class="tail"></span>반가워요</span></li>
+        <li class="user2"><span class="text"><span class="tail"></span>반가워요</span></li> -->
       </ul>
-      <form action="">
-        <input id="m" autocomplete="off" /><button>Send</button>
+      <div class="typing-bradcasting"></div>
+      <div class="user-list"></div>
+      <form class="message-form" action="">
+        <input id="m" autocomplete="off" /><button class="btn-message-send btn-primary" type="submit">Send</button>
       </form>
     </section>
   </main>
@@ -22,27 +32,99 @@
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 
   <script>
-    var socket = io();
-    var nickName = '';
+    // var nickName = prompt('닉네임 입력하세요');
+    var socket = io()
+      , $wrapJoin = $('.wrap-join')
+      , $wrapChatRoom = $('.wrap-chat-room')
+      , $messages = $('#messages')
+      , nickName
+      , roomName;
 
-    $('form').submit(function() {
-      socket.emit('chat message', $('#m').val()); // 뒤에 인자 {}로 넣어주기
-      $('#m').val('');
-      return false;
+    // 방 만들기 & 방 입장하기
+    $('#joinRoom, #createRoom').click(function() {
+      var $this = $(this);
+      roomName = $('#roomName').val();
+      nickName = $('#nickName').val();
+
+      // if($this.attr('id') == 'joinRoom') {
+      //   // 채팅룸 참가
+      //   roomName = $('#roomName').val();
+      //
+      // }else if($this.attr('id') == 'createRoom') {
+      //   // 채팅룸 만들기
+      //   roomName = null;
+      //
+      // }
+      socket.emit('joinRoom', {
+        'roomName' : roomName,
+        'nickName' : nickName
+      });
     });
 
-    socket.on('chat message', function(msg) {
-      var textSet = '<li><span class="text"><span class="tail"></span>' + msg + '</span></li>';
-      $('#messages').append(textSet);
+    // 메세지 전송
+    $('form.message-form').submit(function() {
+      // my message append
+      var message = $('#m').val();
+      socket.emit('sendMessage', {
+        'msg': message,
+        'nickName': nickName,
+        'roomName': roomName
+      });
+      $('#m').val('');
+      printMessage('self', message, nickName);
+      return false;
     });
 
     $('#m').keydown(function() {
       socket.emit('typing');
     });
+    // 생성된 방 이름 받기
+    socket.on('joinRoom', function(roomName, nickName, users) {
+      var userList = Object.keys(users);
+      console.log(users);
+      console.log(nickName + '님이 입장하였습니다');
+      $wrapJoin.hide();
+      $wrapChatRoom.show();
+      $messages.append('<li class="broadcast-area">'+nickName+'님이 입장하였습니다.</li>');
+
+      console.log(userList.toString());
+      $('.user-list').html('참여자 명단:' + userList.join(','));
+
+    });
+    // 서버에서 메세지 받기
+    socket.on('sendMessage', function(data) {
+      console.log('sendMessage', data);
+      printMessage(data.nickName, data.msg, data.nickName);
+    });
 
     socket.on('typing', function() {
-      console.log('typing');
-    });
+      if($('.typing-bradcasting').html() == '') {
+        $('.typing-bradcasting').append('타이핑중...');
+      }
+      setTimeout(function() {
+        $('.typing-bradcasting').html('');
+      }, 1500);
+  	});
+
+    function printMessage(userClass, message, nickname) {
+      var d = new Date();
+      var currTime = d.getHours() + ':' + d.getMinutes();
+      var textSet = '<li class="' + userClass + '"><span class="text"><span class="tail"></span>' + message + '</span><div>' + currTime + '</div>'+ nickName +'</li>';
+      $messages.append(textSet);
+    }
+
+// 룸생성하기
+// joinroom
+// io.sockets.in(roomId).emit()
+// socketIds = {}
+// 닉네임이 키값 ssocketIds[nickmane] (서버에서 조인할때마다 넣어주기)
+// socket.id로 귓속말 보내기
+// Object.keys(socketIds) = socket.id => 키이름만 따로 보내기
+// delete sockets.ids[nickmane] 오브젝트 삭제
+// 귓속말, 메세지 보낼때 오브젝트에 'to' 추가해서 보내기(닉네임, 또는 소켓 아이디)
+// 서버에서는 소켓아이디한테 보내기
+// 스크롤 홀딩기능
+// 룸에서 로비로 이동하기. (leave이벤트 날리기)
 
   </script>
 </body>

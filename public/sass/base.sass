@@ -7,26 +7,51 @@ body
   font-size: 13px
   line-height: 1.5
 
+input
+  padding: 10px
+
+
 .wrap-chat-room
-  position: absolute
+  position: fixed
+  overflow-y: auto
+  display: none
   top: 0
-  bottom: 0
+  bottom: 40px
+  padding: 15px 0
   width: 100%
   background: #424242
+  color: white
+  .broadcast
+    text-align: center
+  .typing-bradcasting
+    position: fixed
+    border: 1px solid white
+    width: 100%
+    height: 30px
+    bottom: 40px
 
-form
+form.room-create-form
+  width: 500px
+  margin: 100px auto
+  input
+    border: 1px solid #bbb
+    margin-bottom: 10px
+
+form.message-form
   background: #969696
   padding: 3px
   position: fixed
   bottom: 0
   width: 100%
-form input
-  border: 0
-  padding: 10px
-  width: 90%
-  margin-right: .5%
-form button
-  width: 9%
+
+  input
+    border: 0
+    width: 90%
+    margin-right: 0.5%
+
+  .btn-message-send
+    width: 9%
+.btn-primary
   padding: 5px 10px
   background: #FF5722
   border: none
@@ -35,15 +60,17 @@ form button
   line-height: 23px
 
 
+
 #messages
   list-style-type: none
   margin: 0
-  padding: 20px 15px
   li
     display: block
     margin-bottom: 20px
     text-align: left
     font-size: 18px
+  li.broadcast-area
+    text-align: center
   li.self
     text-align: right
     .text
@@ -74,3 +101,6 @@ form button
     border-style: solid
     border-width: 20px
     border-color: transparent #F4B400 transparent transparent
+
+#createRoom
+  width: 100%
