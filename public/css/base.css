@@ -5,7 +5,7 @@
   box-sizing: border-box; }
 
 body {
-  font-family: "맑은고딕", Helvetica, Arial;
+  font-family: '맑은고딕', Helvetica, Arial;
   font-size: 13px;
   line-height: 1.5; }
 
@@ -32,7 +32,7 @@ input {
     bottom: 40px; }
 
 form.room-create-form {
-  width: 500px;
+  width: 565px;
   margin: 100px auto; }
   form.room-create-form input {
     border: 1px solid #bbb;
@@ -78,6 +78,16 @@ form.message-form {
       left: initial;
       right: -28px;
       border-color: transparent transparent transparent #40C4FF; }
+    #messages li.self .nickname {
+      display: none; }
+  #messages li.self.secret .text, #messages li.others.secret .text {
+    background: #333;
+    opacity: 0.8;
+    color: #ddd; }
+  #messages li.others.secret .tail {
+    border-color: transparent #333 transparent transparent; }
+  #messages li.self.secret .tail {
+    border-color: transparent transparent transparent #333; }
   #messages .text {
     position: relative;
     display: inline-block;
@@ -100,5 +110,3 @@ form.message-form {
 
 #createRoom {
   width: 100%; }
-
-/*# sourceMappingURL=base.css.map */

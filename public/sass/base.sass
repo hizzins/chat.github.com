@@ -31,7 +31,7 @@ input
     bottom: 40px
 
 form.room-create-form
-  width: 500px
+  width: 565px
   margin: 100px auto
   input
     border: 1px solid #bbb
@@ -76,12 +76,23 @@ form.message-form
     .text
       margin-right: 30px
       background: #40C4FF
-
     .tail
       left: initial
       right: -28px
       border-color: transparent transparent transparent #40C4FF
-
+    .nickname
+      display: none
+  li.self.secret, li.others.secret
+    .text
+      background: #333
+      opacity: 0.8
+      color: #ddd
+  li.others.secret
+    .tail
+      border-color: transparent #333 transparent transparent
+  li.self.secret
+    .tail
+      border-color: transparent transparent transparent #333
   .text
     position: relative
     display: inline-block
