@@ -41,9 +41,13 @@ io.on('connection', function(socket) {
   socket.on('leaveRoom', function(leaveData) {
     var data = leaveData;
     console.log('leaveRoom----', data);
+    console.log('beforeDelete------', socketIds);
     socket.leave(data.roomName);
+    console.log(socketIds[data.roomName][data.socketId]);
     delete socketIds[data.roomName][data.socketId];
-    socket.broadcast.emit('leaveRoom', data.roomName);
+    //나간사람 데이터 (방이름, 나간사람 소켓아이디, 남아있는 방정보)
+    socket.broadcast.emit('leaveRoom', data.roomName, data.socketId);
+    console.log('delete socket---------', socketIds);
   });
 
   socket.on('typing', function() {

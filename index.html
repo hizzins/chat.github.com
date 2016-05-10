@@ -47,6 +47,8 @@
       var $this = $(this);
       roomName = $('#roomName').val();
       nickName = $('#nickName').val();
+      $('#roomName').val('');
+      $('#nickName').val('');
       socket.emit('joinRoom', {
         'roomName' : roomName,
         'nickName' : nickName
@@ -93,12 +95,14 @@
     $('.btn-leave').click(function() {
       var $this = $(this);
       var roomName = $this.attr('data-room');
-      var socketIdInRoom = $('.btn-leave').attr('data-socketId');
+      var socketIdTarget = $('.btn-leave').attr('data-socketId');
       var leaveData = {
         'roomName' : roomName,
         'socketId' : socketId
       };
       socket.emit('leaveRoom', leaveData);
+      $wrapJoin.show();
+      $wrapChatRoom.hide();
     });
     // 타이핑중일때..
     $('#m').keydown(function() {
@@ -107,30 +111,26 @@
 
     // 생성된 방 이름 받기
     socket.on('joinRoom', function(joinData) {
-      var userList = [];
       var data = joinData;
       socketId = socket.id;
       socketIdsInRoom = data.socketIds[data.roomName];
-      for(var i in socketIdsInRoom) {
-        if(socketIdsInRoom.hasOwnProperty(i)) {
-          userList.push(socketIdsInRoom[i]);
-        }
-      }
-      console.log('클라이언트 내소켓', socketId);
-      console.log(socket.id);
+      getUserList();
       $wrapJoin.hide();
       $wrapChatRoom.show();
       $messages.append('<li class="broadcast-area">' + data.nickName + '님이 입장하였습니다.</li>');
-      $('.user-list').html('참여자 명단:' + userList.join(','));
       $('.btn-leave').attr('data-room', data.roomName);
       $('.btn-leave').attr('data-socketId', socketId);
     });
-    // 방 나가기
-    socket.on('leaveRoom', function(roomName) {
-      var socketIdKey = '/#' + socketId;
-      $messages.append('<li class="broadcast-area">' + socketIdsInRoom[socketIdKey] + '님이 퇴장하였습니다.</li>');
 
+    // 방 나가기 (방이름, 나간사람 소켓아이디)
+    socket.on('leaveRoom', function(roomName, socketIdTarget) {
+      var socketIdKey = '/#' + socketIdTarget;
+
+      $messages.append('<li class="broadcast-area">' + socketIdsInRoom[socketIdKey] + '님이 퇴장하였습니다.</li>');
+      delete socketIdsInRoom[socketIdKey];
+      getUserList();
     });
+
     // 서버에서 메세지 받기
     socket.on('sendMessage', function(chatData) {
       console.log('sendMessage', chatData);
@@ -162,6 +162,18 @@
       $messages.append(textSet);
     }
     /*
+     * 참여자 정보
+     */
+    function getUserList() {
+      var userList = [];
+      for(var i in socketIdsInRoom) {
+        if(socketIdsInRoom.hasOwnProperty(i)) {
+          userList.push(socketIdsInRoom[i]);
+        }
+      }
+      $('.user-list').html('참여자 명단:' + userList.join(','));
+    }
+    /*
      * 오브젝트 value값으로 key찾기
      */
     Object.prototype.getKeyByValue = function( value ) {
@@ -172,6 +184,27 @@
             }
         }
     }
+    /**
+     * 창 닫거나 새로고침시 퇴장처리
+     */
+//      window.onbeforeunload = function (e) {
+//        e = e || window.event;
+//        var roomName = $('.btn-leave').attr('data-room');
+//        var socketIdTarget = $('.btn-leave').attr('data-socketId');
+//        var leaveData = {
+//          'roomName' : roomName,
+//          'socketId' : socketId
+//        };
+// alert('방을 나가시겠습니까?');
+//
+//        // For IE<8 and Firefox prior to version 4
+//        if (e) {
+//          e.returnValue = 'Any string';
+//        }
+//        socket.emit('leaveRoom', leaveData);
+//        // For Chrome, Safari, IE8+ and Opera 12+
+//        return 'Any string';
+//      };
 
 // 룸생성하기
 // joinroom
