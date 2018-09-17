@@ -11,7 +11,7 @@ node app.js</code></pre>
 ![main](/public/images/join-room.png)
 
 ### Direct message
-![main](/public/images/directMessage.png)
+![main](/public/images/direct-message.png)
 
 ### Typing 
 ![main](/public/images/typing.png)
