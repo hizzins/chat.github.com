@@ -25,168 +25,167 @@
       <div class="typing-bradcasting"></div>
       <div class="user-list"></div>
       <form class="message-form" action="">
-        <input id="m" autocomplete="off" /><button class="btn-message-send btn-primary" type="submit">Send</button>
+        <input id="message-input" autocomplete="off" /><button class="btn-message-send btn-primary" type="submit">Send</button>
       </form>
     </section>
   </main>
 <script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 
-  <script>
-    var socket = io()
-      , socketId = ''
-      , $wrapJoin = $('.wrap-join')
-      , $wrapChatRoom = $('.wrap-chat-room')
-      , $messages = $('#messages')
-      , socketIdsInRoom = {}
-      , nickName
-      , roomName;
+<script>
+  var socket = io()
+    , socketId = ''
+    , $wrapJoin = $('.wrap-join')
+    , $wrapChatRoom = $('.wrap-chat-room')
+    , $messages = $('#messages')
+    , socketIdsInRoom = {}
+    , nickName
+    , roomName;
 
-    // 방 만들기 & 방 입장하기
-    $('#joinRoom, #createRoom').click(function() {
-      var $this = $(this);
-      roomName = $('#roomName').val();
-      nickName = $('#nickName').val();
-      $('#roomName').val('');
-      $('#nickName').val('');
-      socket.emit('joinRoom', {
-        'roomName' : roomName,
-        'nickName' : nickName
-      });
+  // 방 만들기 & 방 입장하기
+  $('#joinRoom, #createRoom').click(function() {
+    roomName = $('#roomName').val();
+    nickName = $('#nickName').val();
+    $('#roomName').val('');
+    $('#nickName').val('');
+    socket.emit('joinRoom', {
+      'roomName' : roomName,
+      'nickName' : nickName
     });
+  });
 
-    // 메세지 전송
-    $('form.message-form').submit(function() {
-      // my message append
-      var message = $('#m').val();
-      //귓속말 분기
-      if(message.startsWith('/')) {
-        var sliceMessage = message.slice(1);
-        var arrMessage = sliceMessage.split(' ');
-        var realMessage = sliceMessage.replace(arrMessage[0], '');
-        console.log(arrMessage[0]);
-        console.log(socketIdsInRoom);
-        console.log('********', socketIdsInRoom.getKeyByValue(arrMessage[0]));
-        var toTarget = socketIdsInRoom.getKeyByValue(arrMessage[0]) ? socketIdsInRoom.getKeyByValue(arrMessage[0]) : alert('없는 사람입니다');
-        var chatData = {
-          'msg': realMessage,
-          'nickName': nickName,
-          'roomName': roomName,
-          'toSocket': toTarget,
-          'secret':true
-        };
-        console.log('클라이언트에서 전송메세지', chatData);
-        socket.emit('sendMessage', chatData);
-      }else {
-        var chatData = {
-          'msg': message,
-          'nickName': nickName,
-          'roomName': roomName,
-          'secret': false
-        };
-        console.log('클라이언트에서 전송메세지', chatData);
-        socket.emit('sendMessage', chatData);
-      }
-      $('#m').val('');
-      printMessage('self', chatData);
-      return false;
-    });
-    // 나가기
-    $('.btn-leave').click(function() {
-      var $this = $(this);
-      var roomName = $this.attr('data-room');
-      var socketIdTarget = $('.btn-leave').attr('data-socketId');
-      var leaveData = {
-        'roomName' : roomName,
-        'socketId' : socketId
+  // 메세지 전송
+  $('form.message-form').submit(function() {
+    // my message append
+    var message = $('#message-input').val();
+    //귓속말 분기
+    if(message.startsWith('/')) {
+      var sliceMessage = message.slice(1);
+      var arrMessage = sliceMessage.split(' ');
+      var realMessage = sliceMessage.replace(arrMessage[0], '');
+      var toTarget = socketIdsInRoom.getKeyByValue(arrMessage[0]) ? socketIdsInRoom.getKeyByValue(arrMessage[0]) : alert('없는 사람입니다');
+      var chatData = {
+        'msg': realMessage,
+        'nickName': nickName,
+        'roomName': roomName,
+        'toSocket': toTarget,
+        'targetNickName': socketIdsInRoom[toTarget],
+        'secret':true
       };
-      socket.emit('leaveRoom', leaveData);
-      $wrapJoin.show();
-      $wrapChatRoom.hide();
-    });
-    // 타이핑중일때..
-    $('#m').keydown(function() {
-      socket.emit('typing');
-    });
-
-    // 생성된 방 이름 받기
-    socket.on('joinRoom', function(joinData) {
-      var data = joinData;
-      socketId = socket.id;
-      socketIdsInRoom = data.socketIds[data.roomName];
-      getUserList();
-      $wrapJoin.hide();
-      $wrapChatRoom.show();
-      $messages.append('<li class="broadcast-area">' + data.nickName + '님이 입장하였습니다.</li>');
-      $('.btn-leave').attr('data-room', data.roomName);
-      $('.btn-leave').attr('data-socketId', socketId);
-    });
-
-    // 방 나가기 (방이름, 나간사람 소켓아이디)
-    socket.on('leaveRoom', function(roomName, socketIdTarget) {
-      var socketIdKey = '/#' + socketIdTarget;
-
-      $messages.append('<li class="broadcast-area">' + socketIdsInRoom[socketIdKey] + '님이 퇴장하였습니다.</li>');
-      delete socketIdsInRoom[socketIdKey];
-      getUserList();
-    });
-
-    // 서버에서 메세지 받기
-    socket.on('sendMessage', function(chatData) {
-      console.log('sendMessage', chatData);
-      printMessage('others', chatData);
-    });
-
-    socket.on('typing', function() {
-      if($('.typing-bradcasting').html() == '') {
-        $('.typing-bradcasting').append('타이핑중...');
-      }
-      setTimeout(function() {
-        $('.typing-bradcasting').html('');
-      }, 1500);
-  	});
-
-    /**
-     * 화면에 채팅글 프린트해주는 함수
-     */
-    function printMessage(userClass, chatData) {
-      var d = new Date();
-      var data = chatData;
-      var currTime = d.getHours() + ':' + d.getMinutes();
-      if(data.secret) {
-        var textSet = '<li class="' + userClass + ' secret"><span class="text"><span class="tail"></span>' + data.msg + '</span><div>' + currTime + '</div><div class="nickname">'+ data.nickName +'<div></li>';
-
-      }else {
-        var textSet = '<li class="' + userClass + '"><span class="text"><span class="tail"></span>' + data.msg + '</span><div>' + currTime + '</div><div class="nickname">'+ data.nickName +'</div></li>';
-      }
-      $messages.append(textSet);
+      console.log('클라이언트에서 전송메세지', chatData);
+      socket.emit('sendMessage', chatData);
+    }else {
+      var chatData = {
+        'msg': message,
+        'nickName': nickName,
+        'roomName': roomName,
+        'secret': false
+      };
+      console.log('클라이언트에서 전송메세지', chatData);
+      socket.emit('sendMessage', chatData);
     }
-    /*
-     * 참여자 정보
-     */
-    function getUserList() {
-      var userList = [];
-      for(var i in socketIdsInRoom) {
-        if(socketIdsInRoom.hasOwnProperty(i)) {
-          userList.push(socketIdsInRoom[i]);
-        }
+    $('#message-input').val('');
+    printMessage('self', chatData);
+    return false;
+  });
+  // 나가기
+  $('.btn-leave').click(function() {
+    var $this = $(this);
+    var roomName = $this.attr('data-room');
+    var socketIdTarget = $('.btn-leave').attr('data-socketId');
+    var leaveData = {
+      'roomName' : roomName,
+      'socketId' : socketId
+    };
+    socket.emit('leaveRoom', leaveData);
+    $wrapJoin.show();
+    $wrapChatRoom.hide();
+  });
+  // 타이핑중일때..
+  $('#message-input').keydown(function() {
+    socket.emit('typing');
+  });
+
+  // 생성된 방 이름 받기
+  socket.on('joinRoom', function(joinData) {
+    var data = joinData;
+    socketId = socket.id;
+    socketIdsInRoom = data.socketIds[data.roomName];
+    getUserList();
+    $wrapJoin.hide();
+    $wrapChatRoom.show();
+    $messages.append('<li class="broadcast-area">' + data.nickName + '님이 입장하였습니다.</li>');
+    $('.btn-leave').attr('data-room', data.roomName);
+    $('.btn-leave').attr('data-socketId', socketId);
+  });
+
+  // 방 나가기 (방이름, 나간사람 소켓아이디)
+  socket.on('leaveRoom', function(roomName, socketIdTarget) {
+    var socketIdKey = '/#' + socketIdTarget;
+
+    $messages.append('<li class="broadcast-area">' + socketIdsInRoom[socketIdKey] + '님이 퇴장하였습니다.</li>');
+    delete socketIdsInRoom[socketIdKey];
+    getUserList();
+  });
+
+  // 서버에서 메세지 받기
+  socket.on('sendMessage', function(chatData) {
+    console.log('sendMessage', chatData);
+    printMessage('others', chatData);
+  });
+
+  socket.on('typing', function() {
+    if($('.typing-bradcasting').html() == '') {
+      $('.typing-bradcasting').append('타이핑중...');
+    }
+    setTimeout(function() {
+      $('.typing-bradcasting').html('');
+    }, 1500);
+  });
+
+  /**
+   * 화면에 채팅글 프린트해주는 함수
+   */
+  function printMessage(userClass, chatData) {console.log('printMessage', userClass, chatData);
+    var d = new Date();
+    var data = chatData;
+    var isSecret = data.secret;
+    var isSelf = userClass === 'self';
+    var targetNickName = data.targetNickName;
+    var message = (isSelf && isSecret) ? targetNickName + ':' + data.msg : data.msg;
+    var nickName = data.nickName;
+    var currTime = d.getHours() + ':' + d.getMinutes();
+    var itemClass = isSecret ? userClass + ' secret' : userClass;
+    var textSet = '<li class="' + itemClass + '"><span class="text"><span class="tail"></span>' + message
+      + '</span><div class="time">' + currTime + '</div><div class="nickname">'+ nickName +'</div></li>';
+    $messages.append(textSet);
+  }
+  /*
+   * 참여자 정보
+   */
+  function getUserList() {
+    var userList = [];
+    for(var i in socketIdsInRoom) {
+      if(socketIdsInRoom.hasOwnProperty(i)) {
+        userList.push(socketIdsInRoom[i]);
       }
-      $('.user-list').html('참여자 명단:' + userList.join(','));
     }
-    /*
-     * 오브젝트 value값으로 key찾기
-     */
-    Object.prototype.getKeyByValue = function( value ) {
-        for( var prop in this ) {
-            if( this.hasOwnProperty( prop ) ) {
-                 if( this[ prop ] === value )
-                     return prop;
-            }
-        }
-    }
-    /**
-     * 창 닫거나 새로고침시 퇴장처리
-     */
+    $('.user-list').html('참여자 명단:' + userList.join(','));
+  }
+  /*
+   * 오브젝트 value값으로 key찾기
+   */
+  Object.prototype.getKeyByValue = function( value ) {
+      for( var prop in this ) {
+          if( this.hasOwnProperty( prop ) ) {
+               if( this[ prop ] === value )
+                   return prop;
+          }
+      }
+  }
+  /**
+   * 창 닫거나 새로고침시 퇴장처리
+   */
 //      window.onbeforeunload = function (e) {
 //        e = e || window.event;
 //        var roomName = $('.btn-leave').attr('data-room');
@@ -219,6 +218,6 @@
 // 스크롤 홀딩기능
 // 룸에서 로비로 이동하기. (leave이벤트 날리기)
 
-  </script>
+</script>
 </body>
 </html>
