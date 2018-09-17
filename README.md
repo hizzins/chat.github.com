@@ -4,5 +4,5 @@ node app.js</code></pre>
 
 ## Overview
 + Main page
-! (/public/images/main.png)
+!(/public/images/main.png)
 
