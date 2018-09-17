@@ -1,3 +1,3 @@
 ## Usage
-<pre><code> npm install 
+<pre><code>npm install 
 node app.js</code></pre>
