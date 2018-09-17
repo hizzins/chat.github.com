@@ -14,5 +14,5 @@ node app.js</code></pre>
 ![main](/public/images/direct-message.png)
 
 ### Typing 
-![main](/public/images/typing.png)
+![main](/public/images/typing-2.png)
 
