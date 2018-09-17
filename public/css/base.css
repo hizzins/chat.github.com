@@ -26,7 +26,6 @@ input {
     text-align: center; }
   .wrap-chat-room .typing-bradcasting {
     position: fixed;
-    border: 1px solid white;
     width: 100%;
     height: 30px;
     bottom: 40px; }
@@ -58,7 +57,14 @@ form.message-form {
   color: white;
   font-size: 16px;
   line-height: 23px; }
-
+.btn-leave {
+  background: #fdd22d;
+  padding: 5px;
+  color: #585858;
+  border: 0;
+  font-weight: bold;
+  border-radius: 3px;
+}
 #messages {
   list-style-type: none;
   margin: 0; }
