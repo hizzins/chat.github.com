@@ -4,7 +4,15 @@ node app.js</code></pre>
 
 ## Overview
 
-### Main page
-
+### Main
 ![main](/public/images/main.png)
+
+### Join Room
+![main](/public/images/join-room.png)
+
+### Direct message
+![main](/public/images/directMessage.png)
+
+### Typing 
+![main](/public/images/typing.png)
 
