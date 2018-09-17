@@ -1,3 +1,5 @@
-#Usage
-> npm install 
-> node app.js
+## Usage
+<pre><code> 
+npm install 
+node app.js
+</code></pre>
