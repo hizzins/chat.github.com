@@ -3,5 +3,6 @@
 node app.js</code></pre>
 
 ## Overview
-+Main page(/public/images/main.png)
++ Main page
+! (/public/images/main.png)
 
