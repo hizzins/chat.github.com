@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Hizzin's Web Chat</title>
-  <link rel="stylesheet" type="text/css" href="/public/css/base.css">
+  <link rel="stylesheet" type="text/css" href="public/css/base.css">
 </head>
 <body>
   <main>
@@ -17,20 +17,20 @@
     </section>
     <section class="wrap-chat-room">
       <button type="button" class="btn-leave">나가기</button>
+      <div class="user-list"></div>
       <ul id="messages" class="wrap-messages">
         <!-- <li class="self"><span class="text"><span class="tail"></span>안녕하세요</span></li>
         <li class="user1"><span class="text"><span class="tail"></span>안녕하세요</span></li>
         <li class="user2"><span class="text"><span class="tail"></span>반가워요</span></li> -->
       </ul>
       <div class="typing-bradcasting"></div>
-      <div class="user-list"></div>
       <form class="message-form" action="">
         <input id="message-input" autocomplete="off" /><button class="btn-message-send btn-primary" type="submit">Send</button>
       </form>
     </section>
   </main>
 <script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="public/js/jquery-1.11.1.js"></script>
 
 <script>
   var socket = io()
@@ -100,6 +100,9 @@
     socket.emit('leaveRoom', leaveData);
     $wrapJoin.show();
     $wrapChatRoom.hide();
+    location.reload();
+//    console.log('나가기', $('#messages'));
+//    $('#messages').html('');
   });
   // 타이핑중일때..
   $('#message-input').keydown(function() {
@@ -120,11 +123,10 @@
   });
 
   // 방 나가기 (방이름, 나간사람 소켓아이디)
-  socket.on('leaveRoom', function(roomName, socketIdTarget) {
-    var socketIdKey = '/#' + socketIdTarget;
-
-    $messages.append('<li class="broadcast-area">' + socketIdsInRoom[socketIdKey] + '님이 퇴장하였습니다.</li>');
-    delete socketIdsInRoom[socketIdKey];
+  socket.on('leaveRoomComplete', function(roomName, socketIdTarget) {
+    console.log('나갔다.', socketIdsInRoom, socketIdTarget);
+    $messages.append('<li class="broadcast-area">' + socketIdsInRoom[socketIdTarget] + '님이 퇴장하였습니다.</li>');
+    delete socketIdsInRoom[socketIdTarget];
     getUserList();
   });
 
@@ -165,6 +167,7 @@
    */
   function getUserList() {
     var userList = [];
+    console.log('getUserList', socketIdsInRoom);
     for(var i in socketIdsInRoom) {
       if(socketIdsInRoom.hasOwnProperty(i)) {
         userList.push(socketIdsInRoom[i]);

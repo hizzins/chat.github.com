@@ -25,6 +25,9 @@ input {
   .wrap-chat-room .broadcast {
     text-align: center;
   }
+  .wrap-chat-room .user-list {
+    position: fixed;
+  }
   .wrap-chat-room .typing-bradcasting {
     position: fixed;
     width: 100%;
@@ -32,6 +35,7 @@ input {
     bottom: 40px;
     padding-right: 15px;
     text-align: right;
+    border: 1px solid transparent;
   }
 
 form.room-create-form {
@@ -46,7 +50,9 @@ form.message-form {
   padding: 3px;
   position: fixed;
   bottom: 0;
-  width: 100%; }
+  left: 2px;
+  width: 100%;
+}
   form.message-form input {
     border: 0;
     width: 90%;
@@ -62,6 +68,7 @@ form.message-form {
   font-size: 16px;
   line-height: 23px; }
 .btn-leave {
+  float: right;
   background: #fdd22d;
   padding: 5px;
   color: #585858;
@@ -73,6 +80,8 @@ form.message-form {
   font-size: 14px;
 }
 #messages {
+  clear: both;
+  padding-top: 5px;
   list-style-type: none;
   margin: 0; }
   #messages li {
@@ -97,6 +106,9 @@ form.message-form {
     background: #333;
     opacity: 0.8;
     color: #ddd; }
+#messages li .nickname {
+  font-weight: bold;
+}
   #messages li.others.secret .tail {
     border-color: transparent #333 transparent transparent; }
   #messages li.self.secret .tail {

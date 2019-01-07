@@ -43,10 +43,10 @@ io.on('connection', function(socket) {
     console.log('leaveRoom----', data);
     console.log('beforeDelete------', socketIds);
     socket.leave(data.roomName);
-    console.log(socketIds[data.roomName][data.socketId]);
+    console.log('삭제될 소켓', socketIds[data.roomName][data.socketId]);
     delete socketIds[data.roomName][data.socketId];
     //나간사람 데이터 (방이름, 나간사람 소켓아이디, 남아있는 방정보)
-    socket.broadcast.emit('leaveRoom', data.roomName, data.socketId);
+    socket.broadcast.emit('leaveRoomComplete', data.roomName, data.socketId);
     console.log('delete socket---------', socketIds);
   });
 
