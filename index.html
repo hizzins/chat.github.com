@@ -29,11 +29,12 @@
       </form>
     </section>
   </main>
-<script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
+<script src="public/js/socket.io-1.4.5.js"></script>
 <script src="public/js/jquery-1.11.1.js"></script>
 
 <script>
-  var socket = io()
+  var isGitPage = (location.host === 'hizzins.github.io');
+  var socket = isGitPage ? io('https://hizzins.github.io', {path: '/hizzins-chat/socket.io'}) : io()
     , socketId = ''
     , $wrapJoin = $('.wrap-join')
     , $wrapChatRoom = $('.wrap-chat-room')
@@ -41,6 +42,7 @@
     , socketIdsInRoom = {}
     , nickName
     , roomName;
+
 
   // 방 만들기 & 방 입장하기
   $('#joinRoom, #createRoom').click(function() {
@@ -72,7 +74,6 @@
         'targetNickName': socketIdsInRoom[toTarget],
         'secret':true
       };
-      console.log('클라이언트에서 전송메세지', chatData);
       socket.emit('sendMessage', chatData);
     }else {
       var chatData = {
@@ -81,9 +82,9 @@
         'roomName': roomName,
         'secret': false
       };
-      console.log('클라이언트에서 전송메세지', chatData);
       socket.emit('sendMessage', chatData);
     }
+    console.log('클라이언트에서 전송메세지', chatData);
     $('#message-input').val('');
     printMessage('self', chatData);
     return false;
