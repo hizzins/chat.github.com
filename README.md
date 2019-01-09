@@ -16,3 +16,5 @@ node app.js</code></pre>
 ### Typing 
 ![main](/public/images/typing-2.png)
 
+## TODO
+git page socket path error 해결하기.
